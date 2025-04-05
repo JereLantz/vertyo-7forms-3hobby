@@ -1,5 +1,5 @@
 export default function Submit({children}){
     return (
-        <button>{children}</button>
+        <button type="submit">{children}</button>
     )
 }

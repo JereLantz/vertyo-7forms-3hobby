@@ -9,12 +9,30 @@ export const HobbyContext = createContext({
 
 export default function HobbyContextProvider({children}){
     const [hobbies, setHobbies] = useState([])
-    function addHobby(newHobby){
+
+    async function addHobby(newHobby){
+        if(Math.random()<0.2){
+            return {success:false, error:"Saving failed"}
+        }
+
+        const response = await fetch("http://localhost:42069/api/addnewhobby",{
+            method: "POST",
+            body: JSON.stringify(newHobby)
+        })
+        
+        if(!response.ok){
+            //TODO:
+            console.log("error")
+        }
         setHobbies((p)=>[...p,newHobby])
+        
+        return {success:true, error:null}
     }
 
     function deleteHobby(id){
         setHobbies((p)=>p.filter((h)=>h.id !== id))
+
+        return {success:true, error:null}
     }
 
     const ctxValue = {

@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <HobbyContextProvider>
-      <h1>Hello world</h1>
+      <h1>Hobby tracker</h1>
       <AddHobbyForm/>
       </HobbyContextProvider>
     </>
