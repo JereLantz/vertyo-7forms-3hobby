@@ -5,9 +5,7 @@ import Submit from "./Submit";
 export default function AddHobbyForm(){
     const {addHobby} = useContext(HobbyContext)
 
-    const [formState, formAction] = useActionState(addHobbyAction, {erros:null})
-
-    function addHobbyAction(_,formData){
+    async function addHobbyAction(_,formData){
         const errors = []
 
         const hobbyName = formData.get("name")
@@ -22,12 +20,6 @@ export default function AddHobbyForm(){
             errors.push("Please enter description for the hobby. Atleast 5 characters")
         }
 
-        const newHobby = {
-            hobbyName,
-            desc,
-            level,
-        }
-
         if(errors.length > 0){
             return {errors, enteredValues:{
                 hobbyName,
@@ -35,23 +27,38 @@ export default function AddHobbyForm(){
                 level,
             }}
         }
-        console.log(errors)
 
-        console.log(newHobby)
-        const response = addHobby(newHobby)
-        //TODO: tää voi errorata
+        const newHobby = {
+            hobbyName,
+            desc,
+            level,
+        }
+
+        const response = await addHobby(newHobby)
+        console.log(response)
+        if(!response.success){
+            console.log("error")
+            errors.push("Network error. Please try again later.")
+            return {errors, enteredValues:{
+                hobbyName,
+                desc,
+                level,
+            }}
+        }
         return {errors:null}
     }
+
+    const [formState, formAction] = useActionState(addHobbyAction, {erros:null})
 
     return(
         <form action={formAction}>
         <p>
         <label htmlFor="hobbyName">Enter name of the hobby: </label>
-        <input id="hobbyName" name="name" placeholder="Name"/>
+        <input id="hobbyName" name="name" placeholder="Name" defaultValue={formState.enteredValues?.hobbyName}/>
         </p>
         <p>
         <label htmlFor="hobbyDesc" >Enter description: </label>
-        <input id="hobbyDesc" name="desc" placeholder="Description"/>
+        <input id="hobbyDesc" name="desc" placeholder="Description" defaultValue={formState.enteredValues?.desc}/>
         </p>
         <p>
         <select name="level">
@@ -60,6 +67,9 @@ export default function AddHobbyForm(){
             <option>Advanced</option>
         </select>
         </p>
+        {formState.errors && <ul>
+            {formState.errors.map((er)=> <li key={er}>{er}</li>)}
+            </ul>}
         <Submit>Submit</Submit>
         </form>
     )
