@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -52,6 +53,25 @@ func handleAddNewHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
 
 func handleDeleteHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
 	//TODO:
+	deleteWithIdQuery := `
+	DELETE FROM hobbies WHERE id=?;
+	`
+
+	idstring := r.PathValue("id")
+	id, err := strconv.Atoi(idstring)
+	if err != nil {
+		w.WriteHeader(500)
+		log.Printf("error converting id from string to an int %s\n", err)
+		return
+	}
+
+	_, err = db.Exec(deleteWithIdQuery, id)
+	if err != nil{
+		w.WriteHeader(500)
+		log.Printf("error deleting row from the database %s\n", err)
+		return
+	}
+	w.WriteHeader(200)
 }
 
 func handleGetAllHobbies(db *sql.DB, w http.ResponseWriter){
@@ -148,7 +168,7 @@ func main(){
 		time.Sleep(1 * time.Second)
 		handleGetAllHobbies(db, w)
 	})
-	handler.HandleFunc("DEL /api/deletehobby/{id}", func(w http.ResponseWriter, r *http.Request) {
+	handler.HandleFunc("DELETE /api/deletehobby/{id}", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(1 * time.Second)
 		handleDeleteHobby(db, w, r)
 	})
