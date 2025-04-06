@@ -1,14 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createContext } from "react";
 
 export const HobbyContext = createContext({
-    hobbies:[],
+    hobbies:null,
     addHobby: ()=>{},
-    deleteHobby: ()=>{}
+    deleteHobby: ()=>{},
 })
 
 export default function HobbyContextProvider({children}){
-    const [hobbies, setHobbies] = useState([])
+    const [hobbies, setHobbies] = useState()
+
+    useEffect(()=>{
+        async function getSavedHobbies(){
+            const response = await fetch("http://localhost:42069/api/getallhobbies")
+
+            const resData = await response.json()
+
+            setHobbies(resData)
+        }
+
+        getSavedHobbies()
+    },[])
 
     async function addHobby(newHobby){
         if(Math.random()<0.2){
@@ -25,7 +37,6 @@ export default function HobbyContextProvider({children}){
         })
         
         if(!response.ok){
-            //TODO:
             return {success:false}
         }
         setHobbies((p)=>[...p,newHobby])
@@ -40,7 +51,7 @@ export default function HobbyContextProvider({children}){
     }
 
     const ctxValue = {
-        hobbies,
+        hobbies:hobbies,
         addHobby,
         deleteHobby,
     }
