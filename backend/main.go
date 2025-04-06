@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -16,7 +17,7 @@ type hobby struct{
 	Level string `json:"level"`
 }
 
-func parseJSONHobby(r *http.Request) (hobby, error){
+func parseJSONHobbyBody(r *http.Request) (hobby, error){
 	var newHobby hobby
 
 	err := json.NewDecoder(r.Body).Decode(&newHobby)
@@ -26,8 +27,8 @@ func parseJSONHobby(r *http.Request) (hobby, error){
 }
 
 func handleAddNewHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
-	//TODO: lähetä takas vastaus objekti
-	newHobby, err := parseJSONHobby(r)
+	//TODO: lähetä takas vastaus objekti?
+	newHobby, err := parseJSONHobbyBody(r)
 	if err != nil {
 		http.Error(w,`{"error":"Error parsing the data"}`, 400)
 		log.Printf("Error parsing request body to the struct %s\n", err)
@@ -107,12 +108,15 @@ func main(){
 	}
 
 	handler.HandleFunc("POST /api/addnewhobby", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(1 * time.Second)
 		handleAddNewHobby(db, w, r)
 	})
 	handler.HandleFunc("GET /api/getallhobbies", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(1 * time.Second)
 		handleGetAllHobbies(db, w, r)
 	})
 	handler.HandleFunc("DEL /api/deletehobby/{id}", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(1 * time.Second)
 		handleDeleteHobby(db, w, r)
 	})
 
