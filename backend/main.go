@@ -28,7 +28,6 @@ func parseJSONHobbyBody(r *http.Request) (hobby, error){
 }
 
 func handleAddNewHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
-	//TODO: lähetä takas vastaus objekti?
 	newHobby, err := parseJSONHobbyBody(r)
 	if err != nil {
 		http.Error(w,`{"error":"Error parsing the data"}`, 400)
@@ -52,7 +51,6 @@ func handleAddNewHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
 }
 
 func handleDeleteHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
-	//TODO:
 	deleteWithIdQuery := `
 	DELETE FROM hobbies WHERE id=?;
 	`
@@ -109,6 +107,26 @@ func handleGetAllHobbies(db *sql.DB, w http.ResponseWriter){
 
 	w.WriteHeader(200)
 	w.Write(jsonData)
+}
+
+func handleDeleteAllHobbies(db *sql.DB, w http.ResponseWriter){
+	deleteAllQuery := `
+	DROP TABLE hobbies;
+	`
+	_, err :=db.Exec(deleteAllQuery)
+	if err != nil {
+		log.Printf("failed to delete the hobbies table %s\n", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	err = initializeDBScema(db)
+	if err != nil {
+		log.Printf("Error reinitalizing the database schema %s\n", err)
+		w.WriteHeader(500)
+		return
+	}
+	w.WriteHeader(200)
 }
 
 func connectDB() (*sql.DB, error){
@@ -171,6 +189,9 @@ func main(){
 	handler.HandleFunc("DELETE /api/deletehobby/{id}", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(1 * time.Second)
 		handleDeleteHobby(db, w, r)
+	})
+	handler.HandleFunc("DELETE /api/deleteallhobbies", func(w http.ResponseWriter, r *http.Request) {
+		handleDeleteAllHobbies(db, w)
 	})
 
 	log.Printf("Server started on port %s\n", server.Addr)
