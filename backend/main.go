@@ -54,8 +54,41 @@ func handleDeleteHobby(db *sql.DB, w http.ResponseWriter, r *http.Request){
 	//TODO:
 }
 
-func handleGetAllHobbies(db *sql.DB, w http.ResponseWriter, r *http.Request){
-	//TODO:
+func handleGetAllHobbies(db *sql.DB, w http.ResponseWriter){
+	var hobbies []hobby
+
+	getAllQuery := `
+	SELECT * FROM hobbies;
+	`
+	row, err := db.Query(getAllQuery)
+	defer row.Close()
+	if err != nil{
+		w.WriteHeader(500)
+		log.Printf("Error executing get all query %s\n", err)
+		return
+	}
+
+	for row.Next(){
+		var newHobby hobby
+		err := row.Scan(&newHobby.Id, &newHobby.Name, &newHobby.Desc, &newHobby.Level)
+		if err != nil{
+			w.WriteHeader(500)
+			log.Printf("error scanning a row %s\n",err)
+			return
+		}
+
+		hobbies = append(hobbies, newHobby)
+	}
+
+	jsonData, err := json.Marshal(hobbies)
+	if err != nil{
+		w.WriteHeader(500)
+		log.Printf("error marhaling data to json %s\n",err)
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(jsonData)
 }
 
 func connectDB() (*sql.DB, error){
@@ -113,7 +146,7 @@ func main(){
 	})
 	handler.HandleFunc("GET /api/getallhobbies", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(1 * time.Second)
-		handleGetAllHobbies(db, w, r)
+		handleGetAllHobbies(db, w)
 	})
 	handler.HandleFunc("DEL /api/deletehobby/{id}", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(1 * time.Second)
