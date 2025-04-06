@@ -44,7 +44,14 @@ export default function HobbyContextProvider({children}){
         return {success:true}
     }
 
-    function deleteHobby(id){
+    async function deleteHobby(id){
+        const response = await fetch(`http://localhost:42069/api/deletehobby/${id}`,{
+            method:"DELETE",
+        })
+        if(!response.ok){
+            return {success:false}
+        }
+
         setHobbies((p)=>p.filter((h)=>h.id !== id))
 
         return {success:true}
