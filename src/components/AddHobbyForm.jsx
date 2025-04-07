@@ -34,10 +34,10 @@ export default function AddHobbyForm(){
             level,
         }
 
-        const response = await addHobby(newHobby)
-        console.log(response)
-        if(!response.success){
-            console.log("error")
+        try{
+            await addHobby(newHobby)
+        }
+        catch(error){
             errors.push("Network error. Please try again later.")
             return {errors, enteredValues:{
                 hobbyName,

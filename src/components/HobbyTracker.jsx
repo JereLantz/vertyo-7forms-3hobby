@@ -5,17 +5,16 @@ export default function HobbyTracker(){
     const {hobbies, deleteHobby} = use(HobbyContext)
 
     return(
-        <>
-        {hobbies &&(
         <div>
+        {hobbies &&(
             <ul>
-                {hobbies.map((hobby)=><li key={hobby.id}>
-                    {hobby.hobbyName}, {hobby.desc}, {hobby.level}
+                {hobbies.map((hobby)=>(
+                    <li key={hobby.id}>
+                    {hobby.hobbyName}, {hobby.desc}, {hobby.level} 
                     <button onClick={()=>deleteHobby(hobby.id)}>Delete</button>
-                    </li>)}
+                    </li>))}
             </ul>
-        </div>)
-            }
-        </>
+        )}
+        </div>
     )
 }

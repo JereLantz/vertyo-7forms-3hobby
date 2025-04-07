@@ -5,6 +5,7 @@ export const HobbyContext = createContext({
     hobbies:[],
     addHobby: ()=>{},
     deleteHobby: ()=>{},
+    deleteAllHobbies: ()=>{},
 })
 
 export default function HobbyContextProvider({children}){
@@ -16,7 +17,12 @@ export default function HobbyContextProvider({children}){
 
             const resData = await response.json()
 
+            if(!resData){
+                setHobbies([])
+                return
+            }
             setHobbies(resData)
+            console.log(resData)
         }
 
         getSavedHobbies()
@@ -25,7 +31,7 @@ export default function HobbyContextProvider({children}){
     async function addHobby(newHobby){
         if(Math.random()<0.2){
             console.log("random")
-            return {success:false}
+            throw new Error("Failed to add because random")
         }
 
         const response = await fetch("http://localhost:42069/api/addnewhobby",{
@@ -37,11 +43,9 @@ export default function HobbyContextProvider({children}){
         })
         
         if(!response.ok){
-            return {success:false}
+            throw new Error("Failed to add")
         }
         setHobbies((p)=>[...p,newHobby])
-        
-        return {success:true}
     }
 
     async function deleteHobby(id){
@@ -57,10 +61,24 @@ export default function HobbyContextProvider({children}){
         return {success:true}
     }
 
+    async function deleteAllHobbies(){
+        const response = await fetch("http://localhost:42069/api/deleteallhobbies",{
+            method:"DELETE",
+        })
+
+        if(!response.ok){
+            return {success:false}
+        }
+
+        setHobbies([])
+        return {success:true}
+    }
+
     const ctxValue = {
         hobbies:hobbies,
         addHobby,
         deleteHobby,
+        deleteAllHobbies,
     }
 
     return(
