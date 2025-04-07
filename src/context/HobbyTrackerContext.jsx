@@ -12,6 +12,7 @@ export default function HobbyContextProvider({children}){
     const [hobbies, setHobbies] = useState([])
 
     useEffect(()=>{
+        /*
         async function getSavedHobbies(){
             const response = await fetch("http://localhost:42069/api/getallhobbies")
 
@@ -23,10 +24,23 @@ export default function HobbyContextProvider({children}){
             }
             setHobbies(resData)
             console.log(resData)
-        }
+        }*/
 
         getSavedHobbies()
     },[])
+
+    async function getSavedHobbies(){
+        const response = await fetch("http://localhost:42069/api/getallhobbies")
+
+        const resData = await response.json()
+
+        if(!resData){
+            setHobbies([])
+            return
+        }
+        setHobbies(resData)
+        console.log(resData)
+    }
 
     async function addHobby(newHobby){
         if(Math.random()<0.2){
@@ -45,7 +59,8 @@ export default function HobbyContextProvider({children}){
         if(!response.ok){
             throw new Error("Failed to add")
         }
-        setHobbies((p)=>[...p,newHobby])
+        //setHobbies((p)=>[...p,newHobby])
+        getSavedHobbies()
     }
 
     async function deleteHobby(id){
