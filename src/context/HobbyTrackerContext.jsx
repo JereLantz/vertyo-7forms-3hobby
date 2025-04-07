@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { createContext } from "react";
 
 export const HobbyContext = createContext({
-    hobbies:null,
+    hobbies:[],
     addHobby: ()=>{},
     deleteHobby: ()=>{},
 })
 
 export default function HobbyContextProvider({children}){
-    const [hobbies, setHobbies] = useState()
+    const [hobbies, setHobbies] = useState([])
 
     useEffect(()=>{
         async function getSavedHobbies(){
