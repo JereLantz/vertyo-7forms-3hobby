@@ -169,6 +169,7 @@ func main(){
 	}
 
 	db, err := connectDB()
+	defer db.Close()
 	if err != nil{
 		log.Fatalf("Error connecting to the database %s\n", err)
 	}
