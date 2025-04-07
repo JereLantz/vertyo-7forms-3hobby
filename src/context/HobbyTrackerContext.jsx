@@ -62,16 +62,16 @@ export default function HobbyContextProvider({children}){
     }
 
     async function deleteAllHobbies(){
+        console.log("delete all")
         const response = await fetch("http://localhost:42069/api/deleteallhobbies",{
             method:"DELETE",
         })
 
         if(!response.ok){
-            return {success:false}
+            throw new Error("Failed to delete all hobbies")
         }
 
         setHobbies([])
-        return {success:true}
     }
 
     const ctxValue = {

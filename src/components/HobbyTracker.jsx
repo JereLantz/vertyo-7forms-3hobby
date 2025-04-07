@@ -2,10 +2,11 @@ import { HobbyContext } from "../context/HobbyTrackerContext"
 import { use } from "react"
 
 export default function HobbyTracker(){
-    const {hobbies, deleteHobby} = use(HobbyContext)
+    const {deleteAllHobbies,hobbies, deleteHobby} = use(HobbyContext)
 
     return(
         <div>
+        <button onClick={deleteAllHobbies}>Delete all hobbies</button>
         {hobbies &&(
             <ul>
                 {hobbies.map((hobby)=>(
